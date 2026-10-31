@@ -15,14 +15,16 @@ Le formulaire de contact ouvre la messagerie du visiteur avec un email prérempl
 
 Les polices (Space Grotesk, Manrope, JetBrains Mono) sont hébergées dans `assets/fonts/` sous licence SIL Open Font License : le site n'appelle aucun service tiers et ne dépose aucun cookie.
 
-## Mise en ligne sur Hostinger (hébergement web)
+## Mise en ligne (VPS Hostinger, Docker + Traefik)
 
-1. hPanel → **Sites web** → **Gérer** sur coachaxonys.fr → **Avancé** → **Git**.
-2. **Connecter avec GitHub**, autoriser l'application Hostinger sur ce dépôt.
-3. Choisir ce dépôt, branche `main`, dossier `public_html`, puis **Déployer**.
-4. Chaque `git push` sur `main` redéploie automatiquement le site.
+Le site tourne sur le même VPS que vIA Pyrénées, dans un conteneur `nginx:alpine` nommé `axonys-site`. Traefik (déjà en place) oriente coachaxonys.fr vers ce conteneur et gère le certificat HTTPS.
 
-Le déploiement remplace le contenu du dossier cible.
+- `/docker/axonys-site/site` : clone de ce dépôt, mis à jour par `git pull` toutes les 5 minutes (crontab root)
+- `/docker/axonys-site/docker-compose.yml` et `nginx.conf` : copies de `deploy/`
+
+Après une modification de `deploy/nginx.conf`, recopier le fichier et relancer : `cd /docker/axonys-site && cp site/deploy/nginx.conf . && docker compose restart`.
+
+Le fichier `.htaccess` ne sert que pour un hébergement Apache/LiteSpeed ; il est ignoré par Nginx.
 
 ## Modifier le site
 

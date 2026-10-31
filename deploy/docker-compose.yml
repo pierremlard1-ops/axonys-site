@@ -1,0 +1,17 @@
+# Axonys — conteneur du site sur le VPS (même modèle que vIA Pyrénées)
+# Emplacement sur le serveur : /docker/axonys-site/docker-compose.yml
+# Le site est servi depuis /docker/axonys-site/site (clone du dépôt GitHub, mis à jour toutes les 5 minutes).
+services:
+  axonys-site:
+    image: nginx:alpine
+    container_name: axonys-site
+    restart: unless-stopped
+    volumes:
+      - ./site:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.axonys.entrypoints=websecure
+      - traefik.http.routers.axonys.rule=Host(`coachaxonys.fr`) || Host(`www.coachaxonys.fr`)
+      - traefik.http.routers.axonys.tls.certresolver=letsencrypt
+      - traefik.http.services.axonys.loadbalancer.server.port=80
